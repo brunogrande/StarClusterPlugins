@@ -1,17 +1,17 @@
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2013 Angel Pizarro
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -44,7 +44,7 @@ class GridEngineTweaks(ClusterSetup):
     def run(self, nodes, master, user, user_shell, volumes):
         if self.enable_hvmem:
             self._enable_hvmem(master,nodes)
-        self._set_master_slots(master)
+        # self._set_master_slots(master)
         self._make_pe(master)
 
     def _set_master_slots(self,master):
@@ -63,8 +63,10 @@ class GridEngineTweaks(ClusterSetup):
         for node in nodes:
             atts = (node.num_processors, node.memory, node.alias)
             if master.alias == node.alias:
+                continue
                 atts = (self.master_slots, master.memory, master.alias)
             master.ssh.execute("qconf -rattr exechost complex_values slots=%s,h_vmem=%sm %s" % atts, source_profile=True)
+
     def _make_pe(self,master):
         log.info("Creating the make parallel environment")
         template = '''pe_name            make
