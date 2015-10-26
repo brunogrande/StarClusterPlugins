@@ -47,6 +47,12 @@ class GridEngineTweaks(ClusterSetup):
         # self._set_master_slots(master)
         self._make_pe(master)
 
+    def on_add_node(self, node, nodes, master, user, user_shell, volumes):
+        super(GridEngineTweaks, self).on_add_node(node, nodes, master, user, user_shell, volumes)
+        log.info("Configuring h_vmem on %s" % node.alias)
+        atts = (node.num_processors, node.memory, node.alias)
+        master.ssh.execute("qconf -rattr exechost complex_values slots=%s,h_vmem=%sm %s" % atts, source_profile=True)
+
     def _set_master_slots(self,master):
         log.info("Setting the number of slots on master to %s" % self.master_slots)
         master.ssh.execute("qconf -mattr queue slots '[%s=%s]' all.q" % (master.alias, self.master_slots), source_profile=True)
